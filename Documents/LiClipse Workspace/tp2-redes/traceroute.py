@@ -5,6 +5,7 @@ import logging
 #import plac
 import sys
 from time import time #importamos la bliblioteca para calcular tiempos
+import cimbala
 
 #from clint.textui import colored, puts
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR) 
@@ -44,12 +45,14 @@ else:
     print resp[0][1].type,ttl
     RTT.append(-1)
     
-while resp[0][1].type !=0:
+while ttl < 30 and (len(resp) == 0 or resp[0][1].type !=0):                    
     ttl=ttl+1
+    print "ttl: " + str(ttl)
     paquete=IP(dst=destino,ttl=ttl) / ICMP() #Manda paquete ICMP. El default es echo-request
     resp,noresp=sr(paquete,timeout=TO) #Recibe la primer respuesta
     if len(resp)==0: #Salio por timeout
         hop.append("*")
+        RTT.append(RTT[-1])
     else:
         if (resp[0][1].type==11): #Time exceeded
             tactual=time.time()
@@ -59,10 +62,12 @@ while resp[0][1].type !=0:
             tanterior=tactual
         else:
             hop.append("*")
-            RTT.append(-1)
+            RTT.append(RTT[-1])
             print resp[0][1].type,ttl,"`"
             
 print "echo reply"
+print "RTTs: " + str(RTT)
+print "Outliers: " + str(cimbala.cimbala(RTT)) 
 
 #hop[ttl]=resp.src #IP destino del paquete recibido
         

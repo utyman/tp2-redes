@@ -1,6 +1,7 @@
 from numpy.random.mtrand import np
 from scipy import stats
 from cmath import sqrt
+import copy
 
 
 
@@ -44,11 +45,16 @@ def esUnOutlier(maximoDesvioAbsoluto, desvioStandard, tau):
     return maximoDesvioAbsoluto > desvioStandard*tau
 
 
-def cimbala(valores):
+def obtenerDiferenciasRTT(RTTS):
+    return [j-i for i, j in zip(RTTS[:-1], RTTS[1:])] 
+    
+
+def cimbala(RTTS):
+    valores = obtenerDiferenciasRTT(RTTS)
     alpha = 0.05
     outliers = []
     noSeEncontraronCandidatosAOutliers = False
-    
+    valoresOriginales = copy.copy(valores)
     while not noSeEncontraronCandidatosAOutliers:
         media = calcularMedia(valores)
         desvioStandard = calcularDesvioStandard(valores)
@@ -60,13 +66,11 @@ def cimbala(valores):
         tau = calcularTau(alpha, len(valores))
         
         if esUnOutlier(maximoDesvioAbsoluto, desvioStandard, tau):
-            outliers.append(indiceMaximoDesvioAbsoluto)
+            outliers.append(valoresOriginales.index(valores[indiceMaximoDesvioAbsoluto]))
             valores.pop(indiceMaximoDesvioAbsoluto)
+            noSeEncontraronCandidatosAOutliers = True
         else:
             noSeEncontraronCandidatosAOutliers = True
     
     return outliers;
     
-
-if __name__ == '__main__':
-    print cimbala([48.9, 49.2, 49.2, 49.3, 49.3, 49.8, 49.9, 50.1, 150.2, 150.5])
