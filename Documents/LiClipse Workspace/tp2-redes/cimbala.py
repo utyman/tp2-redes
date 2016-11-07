@@ -68,7 +68,7 @@ def cimbala(RTTS):
         if esUnOutlier(maximoDesvioAbsoluto, desvioStandard, tau):
             outliers.append(valoresOriginales.index(valores[indiceMaximoDesvioAbsoluto]))
             valores.pop(indiceMaximoDesvioAbsoluto)
-            noSeEncontraronCandidatosAOutliers = True
+            noSeEncontraronCandidatosAOutliers = False
         else:
             noSeEncontraronCandidatosAOutliers = True
     
