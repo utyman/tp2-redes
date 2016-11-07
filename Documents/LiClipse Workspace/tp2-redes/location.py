@@ -8,12 +8,16 @@ def obtenerInformacionIP(IP):
     response = urlopen(url)
     data = json.load(response)
     
-    if 'bogon' in data.keys():
+    if 'bogon' in data.keys() or IP.startswith('192.168') or IP.startswith('10.0') or IP.startswith('172.16'):
         print 'IP: ' + str(IP)
-        print 'Direccion bogon'
+        print 'Direccion bogon o interna'
         return None
     
-    org=data['org']
+    if 'org' in data.keys():
+        org=data['org']
+    else:
+        org=""
+    
     loc=data['loc']
     ciudad = data['city']
     pais=data['country']
