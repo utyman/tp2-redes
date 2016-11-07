@@ -1,3 +1,8 @@
 scipy
+scapy
+numpy
+dnspython
+gpolyencode
 motionless
+urllib2
 polyline
