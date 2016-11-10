@@ -59,9 +59,7 @@ def cimbala(RTTS):
         media = calcularMedia(valores)
         desvioStandard = calcularDesvioStandard(valores)
         desviosAbsolutos = map( (lambda v : calcularValorDesvioAbsoluto(v, media)), valores)
-        
         maximoDesvioAbsoluto = max(desviosAbsolutos)
-        
         indiceMaximoDesvioAbsoluto = desviosAbsolutos.index(maximoDesvioAbsoluto)
         tau = calcularTau(alpha, len(valores))
         

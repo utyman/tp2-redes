@@ -22,6 +22,10 @@ def obtenerInformacionIP(IP):
     ciudad = data['city']
     pais=data['country']
     region=data['region']
-    
-    print 'IP : {4} \nRegion : {1} \nCountry : {2} \nCity : {3} \nOrg : {0}'.format(org,region,pais,ciudad,IP)
+    region_str = region.encode("utf-8")
+    print 'IP : ' + str(IP)
+    print 'Region: '+ region_str
+    print 'Country: ' + str(pais)
+    print 'City: ' + str(ciudad)
+    print 'Org: ' + str(org)
     return loc
