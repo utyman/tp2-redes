@@ -56,7 +56,6 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes-1):
         locs.append(obtenerInformacionIP(resp[0][1].src))
         
         RTT.append(tactual - tanterior)
-        print "RTTs: " + str(RTT)
         RTT_master[0] += (tactual - tanterior)
         tanterior=tactual
     else:
@@ -64,7 +63,6 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes-1):
         print "No se obtuvo una respuesta al paquete ICMP enviado (timeout)"
         obtenerInformacionIP(resp[0][1].src)
         RTT.append(0)
-        print "RTTs: " + str(RTT)
         RTT_master[0] += 0
         
     while ttl < 30 and (len(resp) == 0 or resp[0][1].type !=0):                    
@@ -76,7 +74,6 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes-1):
             hop.append("*")
             print "No se obtuvo una respuesta al paquete ICMP enviado (timeout)"
             RTT.append(RTT[-1])
-            print "RTTs: " + str(RTT)
             RTT_master[ttl] += RTT[-1]
         else:
             if (resp[0][1].type==11): #Time exceeded
@@ -86,7 +83,6 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes-1):
                 locs.append(obtenerInformacionIP(resp[0][1].src))
                 print "Delta RTT: " + str(tactual - tanterior)
                 RTT.append(tactual - tanterior)
-                print "RTTs: " + str(RTT)
                 RTT_master[ttl] += (tactual - tanterior)
                 tanterior=tactual
             else:
@@ -98,12 +94,9 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes-1):
                 locs.append(obtenerInformacionIP(resp[0][1].src))
                 RTT_master[ttl] += RTT[-1]                
                 RTT.append(RTT[-1])
-                print "RTTs: " + str(RTT)
                 
     print "\nInformacion final:"
-    print "INICIO DE LOS RTT"
     print "RTTs: " + str(RTT)
-    print "FIN DE LOS RTT"
     print "Candidatos Outliers (indice del salto empezando en 0 y con eliminacion): " + str(cimbala.cimbala(RTT)) 
     print "hops: " + str(hop)
     print "url mapa: " + str(obtenerMapa(locs))
