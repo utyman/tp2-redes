@@ -5,6 +5,11 @@ import copy
 
 
 
+def calcularDiferenciaPromedio(valores):
+    media = calcularMedia(valores);
+    desvioStandard = calcularDesvioStandard(valores);
+    return map( (lambda v : calcularValorDesvioAbsoluto(v, media)/desvioStandard), valores)
+
 def calcularDesvioStandard(valores):
     """Calcular el desvio standard
     valores: arreglo con los valores
