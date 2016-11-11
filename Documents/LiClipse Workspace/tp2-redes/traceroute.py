@@ -20,7 +20,7 @@ if len(sys.argv)!= 2:
 ttl=1
 TO=1 #Valor maximo de espera de la respuesta
 destino=sys.argv[1]
-cantidad_de_traceroutes = 1
+cantidad_de_traceroutes = 40
 # Dentro de RTT master van a estar los RTT promediados.
 RTT_master = []
 RTT_master_cant = []
