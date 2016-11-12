@@ -7,10 +7,8 @@ from time import time #importamos la bliblioteca para calcular tiempos
 import cimbala 
 from maps import obtenerMapa
 from urllib2 import urlopen
-from cimbala import calcularDesvioStandard, calcularDiferenciaPromedio
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
-import matplotlib.pyplot as plt
 
 
 
@@ -19,7 +17,7 @@ if len(sys.argv)!= 2:
     print sys.argv
     sys.exit(1)
 ttl=1
-TO=1 #Valor maximo de espera de la respuesta
+TO=3 #Valor maximo de espera de la respuesta
 destino=sys.argv[1]
 cantidad_de_traceroutes = 40
 # Dentro de RTT master van a estar los RTT promediados.
@@ -30,11 +28,8 @@ for i in range(0,29):
     RTT_master.append(0)
     RTT_master_cant.append(0)
 
-# Hago traceroute 40 veces (tiempo arbitrario de monitoreo considerado suficiente)
-for iteracion_traceroute in range(0,cantidad_de_traceroutes):
-    print("\n")
-    print "Monitoreo: " + str(iteracion_traceroute)
-    print("=========================================")
+# Hago traceroute 40 veces (tiempo arbitrario de monitoreo considerado suificiente)
+for iteracion_traceroute in range(0,cantidad_de_traceroutes-1):
     hop = []
     RTT = []
     locs = []
@@ -45,11 +40,10 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes):
     locs.append(obtenerInformacionIP(mi_ip))
     print "\n"
     
-    paquete=IP(dst=destino,ttl=ttl) / ICMP() #Manda paquete ICMP. El default es echo-request. A
+    paquete=IP(dst=destino,ttl=ttl) / ICMP() #Manda paquete ICMP. El default es echo-request. Arma 3 paquetes iguales
     RTT_suma=0
     RTT_cant=0        
 
-    # ttl 0
     for p in range(0,5):
         tpri=time.time()
         resp,noresp=sr(paquete, verbose=False) #Recibe varias respuestas. Solo consideramos la primera
@@ -64,9 +58,7 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes):
  
     if RTT_cant==0:
          hop.append("*")
-         RTT.append(0) # el primer salto tendria que responder casi siempre. Si no lo consideramos inmediato
-         RTT_master[ttl] += 0
-         RTT_master_cant[ttl] += 1
+         RTT.append(-1)
          print "No se obtuvo una respuesta al paquete ICMP enviado (timeout)"
     else:
          RTT.append(RTT_suma/RTT_cant)
@@ -110,10 +102,7 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes):
 
         if RTT_cant==0:
             hop.append("*")
-            RTT.append(RTT[-1]) # se tomo tomar como RTT entre saltos el ultimo RTT en caso de que el nodo no responda 
-                                # time exceeded
-            RTT_master[ttl] += (RTT[-1])
-            RTT_master_cant[ttl] += 1
+            RTT.append(-1)
             print "No se obtuvo una respuesta al paquete ICMP enviado (timeout)"
         else:
             RTT.append(RTT_suma/RTT_cant)
@@ -126,38 +115,16 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes):
                 
             print "RTT: " + str(RTT_suma/RTT_cant)           
                 
-    print "\nInformacion final traceroute:"
-    print "=============================\n"
+    print "\nInformacion final:"
     print "RTTs: " + str(RTT)
-    print "Desvio standard: " +  str(calcularDesvioStandard(cimbala.obtenerDiferenciasRTT(RTT)))
-    print "Candidatos Outliers (indice del salto empezando en 0 (nodo 1 -> nodo 2) y con eliminacion): " + str(cimbala.cimbala(RTT))
-    print "(Xi - media) / S: " + str(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT)))
+#PONER    print "Candidatos Outliers (indice del salto empezando en 0 y con eliminacion): " + str(cimbala.cimbala(RTT))
     print "hops: " + str(hop)
+#z    print "url mapa: " + str(obtenerMapa(locs))
     print "url mapa: " + str(obtenerMapa(locs))
     ttl=1
 
 # Calculo el promedio dividiendo cada suma de RTT's por la cantidad de veces que hicimos traceroute y el RTT no fue 0.
-RTT_promediados = []
-for i in range(0,len(RTT_master)):
-    if RTT_master_cant[i] != 0:
-        RTT_promediados.append(RTT_master[i] /  RTT_master_cant[i])
-# Nota: RTT tendra el promedio de los promedios de las rafagas para cada ttl. Ignorar los 0's.
-print("\n")
-print("Informacion del promedio del monitoreo de varios traceroutes")
-print("============================================================")
-print "RTTs por TTL promediados entre saltos : " + str(RTT_promediados)
-print "RTTs entre saltos promediados entre saltos : " + str(cimbala.obtenerDiferenciasRTT(RTT_promediados))
-print "Desvio standard promediado monitoreo: " +  str(cimbala.obtenerDiferenciasRTT(RTT_promediados))
-print "Candidatos Outliers (indice del salto empezando en 0 (nodo 1 -> nodo 2) y con eliminacion) promediado: " + str(cimbala.cimbala(RTT_promediados))
-print "(Xi - media) / S: " + str(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT_promediados)))
-plt.plot(cimbala.obtenerDiferenciasRTT(RTT_promediados))
-plt.ylabel('RTT promediados entre saltos')
-plt.xlabel('Salto')
-plt.title('RTT entre saltos (Promedio)')
-plt.savefig('RTT_promediados.png', bbox_inches='tight')
-plt.close()
-plt.plot(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT_promediados)))
-plt.ylabel('(Xi - media)/S')
-plt.xlabel('Salto')
-plt.title('Desvio relativo del salto con respecto a la media')
-plt.savefig('desvio_media.png', bbox_inches='tight')
+for i in range(0,30):
+    RTT_master[i] = RTT_master[i] /  RTT_master_cant[i]
+# Nota: RTT Promediados asume que tardaste 30 ttl. Por eso, tendra 0's dependiendo de cuantos menos ttl's tardaste. Ignorar los 0's.
+print "RTTs Promediados: " + str(RTT_master)
