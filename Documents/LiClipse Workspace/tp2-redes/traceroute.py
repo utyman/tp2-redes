@@ -10,6 +10,7 @@ from urllib2 import urlopen
 from cimbala import calcularDesvioStandard, calcularDiferenciaPromedio
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
+import matplotlib.pyplot as plt
 
 
 
@@ -20,7 +21,7 @@ if len(sys.argv)!= 2:
 ttl=1
 TO=1 #Valor maximo de espera de la respuesta
 destino=sys.argv[1]
-cantidad_de_traceroutes = 40
+cantidad_de_traceroutes = 2
 # Dentro de RTT master van a estar los RTT promediados.
 RTT_master = []
 RTT_master_cant = []
@@ -128,9 +129,9 @@ for iteracion_traceroute in range(0,cantidad_de_traceroutes):
     print "\nInformacion final traceroute:"
     print "=============================\n"
     print "RTTs: " + str(RTT)
-    print "Desvio standard: " +  str(calcularDesvioStandard(RTT))
+    print "Desvio standard: " +  str(calcularDesvioStandard(cimbala.obtenerDiferenciasRTT(RTT)))
     print "Candidatos Outliers (indice del salto empezando en 0 (nodo 1 -> nodo 2) y con eliminacion): " + str(cimbala.cimbala(RTT))
-    print "(Xi - media) / S: " + str(calcularDiferenciaPromedio(RTT))
+    print "(Xi - media) / S: " + str(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT)))
     print "hops: " + str(hop)
     print "url mapa: " + str(obtenerMapa(locs))
     ttl=1
@@ -144,7 +145,19 @@ for i in range(0,len(RTT_master)):
 print("\n")
 print("Informacion del promedio del monitoreo de varios traceroutes")
 print("============================================================")
-print "RTTs Promediados: " + str(RTT_promediados)
-print "Desvio standard promediado monitoreo: " +  str(calcularDesvioStandard(RTT_promediados))
+print "RTTs por TTL promediados entre saltos : " + str(RTT_promediados)
+print "RTTs entre saltos promediados entre saltos : " + str(cimbala.obtenerDiferenciasRTT(RTT_promediados))
+print "Desvio standard promediado monitoreo: " +  str(cimbala.obtenerDiferenciasRTT(RTT_promediados))
 print "Candidatos Outliers (indice del salto empezando en 0 (nodo 1 -> nodo 2) y con eliminacion) promediado: " + str(cimbala.cimbala(RTT_promediados))
-print "(Xi - media) / S: " + str(calcularDiferenciaPromedio(RTT_promediados))
+print "(Xi - media) / S: " + str(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT_promediados)))
+plt.plot(cimbala.obtenerDiferenciasRTT(RTT_promediados))
+plt.ylabel('RTT promediados entre saltos')
+plt.xlabel('Salto')
+plt.title('RTT entre saltos (Promedio)')
+plt.savefig('RTT_promediados.png', bbox_inches='tight')
+plt.close()
+plt.plot(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT_promediados)))
+plt.ylabel('(Xi - media)/S')
+plt.xlabel('Salto')
+plt.title('Desvio relativo del salto con respecto a la media')
+plt.savefig('desvio_media.png', bbox_inches='tight')
