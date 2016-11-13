@@ -5,6 +5,21 @@ import sys
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
 
+import logging
+import location
+import funciones
+from location import obtenerInformacionIP
+from funciones import *
+import sys
+from time import time #importamos la bliblioteca para calcular tiempos
+import cimbala 
+from maps import obtenerMapa
+from urllib2 import urlopen
+from cimbala import calcularDiferenciaPromedio
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+from scapy.all import *
+import matplotlib.pyplot as plt
+
 
 def mostrarruta(hop,RTT,fin,mi_ip):
     print "Ubicacion de origen: "
@@ -37,9 +52,22 @@ def mostrarinfofinal(RTT,hop,mi_ip):
         print str(nodo+1).rjust(7) + str(hop[nodo]).rjust(16) + "    " + str(RTT[nodo]).rjust(20)
 
 
+def imprimirGraficos(RTT):    
+    plt.plot(cimbala.obtenerDiferenciasRTT(RTT))
+    plt.ylabel('RTT promediados entre saltos')
+    plt.xlabel('Salto')
+    plt.title('RTT entre saltos (Promedio)')
+    plt.savefig('RTT_promediados.png', bbox_inches='tight')
+    plt.close()
+    plt.plot(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT)))
+    plt.ylabel('(Xi - media)/S')
+    plt.xlabel('Salto')
+    plt.title('Desvio relativo del salto con respecto a la media')
+    plt.savefig('desvio_media.png', bbox_inches='tight')
+    
 def eliminarcerosfinales(RTT):
     while RTT[len(RTT)-1] == 0:
-        RTT.pop()
+            RTT.pop()
     
     return RTT
 
