@@ -17,10 +17,10 @@ if len(sys.argv)!= 2:
     print "     o ./traceroute.py 181.15.221.226"
     sys.exit(1)
 
-ttl=1
+ttl=3
 TO=1 #Valor maximo de espera de la respuesta
 destino=sys.argv[1]
-cantidad_de_traceroutes = 1
+cantidad_de_traceroutes = 40
 
 # Dentro de RTT master van a estar los RTT promediados.
 RTT_master = [] #Sumador de RRT promedio que respondieron time exceeded en cada salto entre todas las iteraciones.
