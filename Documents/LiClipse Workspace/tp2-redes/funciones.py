@@ -34,7 +34,7 @@ def mostrarruta(hop,RTT,fin,mi_ip):
 def obtenerIpsOutliers(outliers, hops):
     print "Outliers : \n"
     for outlier in outliers:
-        print str(hops[outlier]) + " -> " + str(hops[outlier+1])  + " (salto: " + str(outlier+1) + ")"
+        print str(hops[outlier+1]) + " -> " + str(hops[outlier+2])  + " (salto: " + str(outlier) + ")"
     
 
 def mostrarinfofinal(RTT,hop,mi_ip):
