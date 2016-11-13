@@ -32,9 +32,9 @@ def mostrarruta(hop,RTT,fin,mi_ip):
 
 
 def obtenerIpsOutliers(outliers, hops):
-    print "Outliers (el primer salto es el salto 0 entre el nodo 1 y el nodo 2 en la ruta) : \n"
+    print "Outliers (el primer salto es el     salto 0 entre el nodo 1 y el nodo 2 en la ruta) : \n"
     for outlier in outliers:
-        print str(hops[outlier+1]) + " -> " + str(hops[outlier+2])  + " (salto: " + str(outlier) + ")"
+        print str(hops[outlier]) + " -> " + str(hops[outlier+1])  + " (salto: " + str(outlier+1) + ")"
     
 
 def mostrarinfofinal(RTT,hop,mi_ip):
