@@ -49,7 +49,6 @@ def mostrarinfofinal(RTT,hop,mi_ip):
 
 
 def imprimirGraficos(RTT):    
-    RTT.insert(0, 0)
     llenarCerosConElRTTAnterior(RTT)
     diferencias = cimbala.obtenerDiferenciasRTT(RTT)
     plt.plot(diferencias)
