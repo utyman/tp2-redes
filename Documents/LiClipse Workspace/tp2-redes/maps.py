@@ -10,6 +10,9 @@ def obtenerMapa(latLongs):
     indice = 1
     dmap = DecoratedMap(scale=4)
     for latLong in latLongs:
+        if latLong == 0:
+            continue
+            
         if latLong == None: 
             indice = indice+1
             continue

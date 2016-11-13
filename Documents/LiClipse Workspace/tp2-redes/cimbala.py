@@ -54,7 +54,14 @@ def obtenerDiferenciasRTT(RTTS):
     return [j-i for i, j in zip(RTTS[:-1], RTTS[1:])] 
     
 
+def llenarCerosConElRTTAnterior(RTTS):
+    for i in range(0, len(RTTS)):
+        if RTTS[i] == 0 and i != 0:
+            RTTS[i] = RTTS[i-1]
+            
 def cimbala(RTTS):
+    llenarCerosConElRTTAnterior(RTTS)
+    RTTS.pop(0)
     valores = obtenerDiferenciasRTT(RTTS)
     alpha = 0.05
     outliers = []
