@@ -2,19 +2,9 @@ from location import *
 import logging
 import location
 import sys
+import cimbala
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
-
-import logging
-import location
-import funciones
-from location import obtenerInformacionIP
-from funciones import *
-import sys
-from time import time #importamos la bliblioteca para calcular tiempos
-import cimbala 
-from maps import obtenerMapa
-from urllib2 import urlopen
 from cimbala import calcularDiferenciaPromedio
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
@@ -99,24 +89,14 @@ def RTTpromedio(ttl,TO,fin,destino,hop,locs, RTT_master,RTT_master_cant):
                  RTT_cant += 1 #Para el promedio consideramos solo los que respondieron time exceeded y el echo reply.
  
                  if (resp[0][1].type==0):
-                     #print "Se obtuvo una respuesta al paquete enviado. (Echo Reply)"
                      fin=1
-                 #else:
-                     #print "Se obtuvo una respuesta al paquete enviado. Codigo: " + str(resp[0][1].type)
-
+ 
     if RTT_cant==0: #Todos los paquetes de este ttl dieron timeout.
         if hop[ttl-1] == 0:
             hop[ttl-1] = ("*")
-           #RTT.append(-1)
-            #print "No se obtuvo una respuesta al paquete ICMP enviado (timeout)"
     else:
-            #RTT.append(RTT_suma/RTT_cant) #Se agrega el promedio de los RTT del nodo en la lista de RTT.
         RTT_master[ttl-1] += (RTT_suma/RTT_cant) #Se suma el promedio de los RTT del nodo para el promedio de todas las iteraciones.
         RTT_master_cant[ttl-1] += 1
-            #if fin==1:
-                #print "Se obtuvo una respuesta al paquete enviado. (Echo Reply)"
-            #else:
-         #print "Se obtuvo una respuesta al paquete enviado. (Time exceeded)"
                 
     print "\nttl: " + str(ttl) + " IP: " + str(hop[ttl-1]) + " RTT Promedio rafaga: " + str(RTT_master[ttl-1]) 
     return fin

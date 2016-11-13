@@ -17,8 +17,8 @@ if len(sys.argv)!= 2:
     print "     o ./traceroute.py 181.15.221.226"
     sys.exit(1)
 
-ttl=3
-TO=1 #Valor maximo de espera de la respuesta
+ttl=1
+TO=3 #Valor maximo de espera de la respuesta
 destino=sys.argv[1]
 cantidad_de_traceroutes = 40
 
@@ -37,11 +37,11 @@ for i in range(0,30):
 
 # obtenemos nuestro ip 
 mi_ip = urlopen('http://ip.42.pl/raw').read()
-locs[ttl-1] = (obtenerInformacionIP(mi_ip))
         
 # Hacemos traceroute 40 veces (tiempo arbitrario de monitoreo considerado suificiente)
 for iteracion_traceroute in range(0,cantidad_de_traceroutes):
     fin=0 # Indica si ya llegamos a destino
+    print "Iteracion: " + str(iteracion_traceroute+1)
                
     while ttl < 30 and (fin==0):                    
         fin=RTTpromedio(ttl,TO,fin,destino,hop,locs,RTT_master,RTT_master_cant)
@@ -66,7 +66,6 @@ mostrarinfofinal(RTT_master,hop,mi_ip)
 print "Candidatos Outliers (indice del salto empezando en 0 y con eliminacion): " + str(cimbala.cimbala(RTT_master))
 locs.insert(0, obtenerInformacionIP(mi_ip))
 print "url mapa: " + str(obtenerMapa(locs))
-
 
 # se imprimen los graficos
 imprimirGraficos(RTT_master)
