@@ -26,6 +26,17 @@ def mostrarruta(hop,RTT,fin,mi_ip):
         print "RTT promedio del nodo entre todas las iteraciones: : " + str(RTT[nodo])  
 
 
+def mostrarinfofinal(RTT,hop,mi_ip):
+    print "\nInformacion final:"
+    print "Salto        IP         RTT promediado entre todas las iteraciones"
+    width=18
+
+    print str(0).rjust(7) + str(mi_ip).rjust(16) + "    " + str(0).rjust(20)
+      
+    for nodo in range(0,len(hop)):
+        print str(nodo+1).rjust(7) + str(hop[nodo]).rjust(16) + "    " + str(RTT[nodo]).rjust(20)
+
+
 def eliminarcerosfinales(RTT):
     while RTT[len(RTT)-1] == 0:
         RTT.pop()
@@ -34,7 +45,6 @@ def eliminarcerosfinales(RTT):
 
 
 def RTTpromedio(ttl,TO,fin,destino,hop,locs, RTT_master,RTT_master_cant):
-    print "\nttl: " + str(ttl)
     paquete=IP(dst=destino,ttl=ttl) / ICMP() #Manda paquete ICMP. El default es echo-request
     RTT_suma=0 #Sumador de RRT para los que respondieron time exceeded en cada salto.
     RTT_cant=0 #Contador que indica los que respondieron time exceeded en cada salto.
@@ -48,15 +58,15 @@ def RTTpromedio(ttl,TO,fin,destino,hop,locs, RTT_master,RTT_master_cant):
              if (resp[0][1].type==11): #Time exceeded
                  tactual=time.time()
                  if RTT_cant==0:
-                     hop.append(resp[0][1].src) #IP destino del primer paquete recibido con time exceeded
-                     locs.append(obtenerInformacionIP(resp[0][1].src)) #Guardamos informacion del primer paquete recibido con time exceeded
+                     hop[ttl-1] = (resp[0][1].src) #IP destino del primer paquete recibido con time exceeded
+                     locs[ttl-1] = (obtenerInformacionIP(resp[0][1].src)) #Guardamos informacion del primer paquete recibido con time exceeded
                  RTT_suma += tactual - tpri #Para el promedio consideramos solo los que respondieron time exceeded.
                  RTT_cant += 1 #Para el promedio consideramos solo los que respondieron time exceeded.
              else:
                  tactual=time.time()
                  if RTT_cant==0:
-                     hop.append(resp[0][1].src) #IP destino del primer paquete recibido con time exceeded
-                     locs.append(obtenerInformacionIP(resp[0][1].src)) #Guardamos informacion del primer paquete recibido con time exceeded
+                     hop[ttl-1] = (resp[0][1].src) #IP destino del primer paquete recibido con time exceeded
+                     locs[ttl-1] = (obtenerInformacionIP(resp[0][1].src)) #Guardamos informacion del primer paquete recibido con time exceeded
                  RTT_suma += tactual - tpri #Para el promedio consideramos solo los que respondieron time exceeded.
                  RTT_cant += 1 #Para el promedio consideramos solo los que respondieron time exceeded y el echo reply.
  
@@ -67,7 +77,8 @@ def RTTpromedio(ttl,TO,fin,destino,hop,locs, RTT_master,RTT_master_cant):
                      #print "Se obtuvo una respuesta al paquete enviado. Codigo: " + str(resp[0][1].type)
 
     if RTT_cant==0: #Todos los paquetes de este ttl dieron timeout.
-        hop.append("*")
+        if hop[ttl-1] == 0:
+            hop[ttl-1] = ("*")
            #RTT.append(-1)
             #print "No se obtuvo una respuesta al paquete ICMP enviado (timeout)"
     else:
@@ -77,8 +88,7 @@ def RTTpromedio(ttl,TO,fin,destino,hop,locs, RTT_master,RTT_master_cant):
             #if fin==1:
                 #print "Se obtuvo una respuesta al paquete enviado. (Echo Reply)"
             #else:
-                #print "Se obtuvo una respuesta al paquete enviado. (Time exceeded)"
+         #print "Se obtuvo una respuesta al paquete enviado. (Time exceeded)"
                 
-        #print "RTT promedio del nodo: " + str(RTT[ttl-1])       
-
+    print "\nttl: " + str(ttl) + " IP: " + str(hop[ttl-1]) + " RTT Promedio rafaga: " + str(RTT_master[ttl-1]) 
     return fin
