@@ -61,8 +61,8 @@ def llenarCerosConElRTTAnterior(RTTS):
             
 def cimbala(RTTS):
     llenarCerosConElRTTAnterior(RTTS)
-    RTTS.pop(0)
     valores = obtenerDiferenciasRTT(RTTS)
+    llenarCerosConElRTTAnterior(RTTS)  # necesario para usar el delta RTT anterior
     alpha = 0.05
     outliers = []
     noSeEncontraronCandidatosAOutliers = False

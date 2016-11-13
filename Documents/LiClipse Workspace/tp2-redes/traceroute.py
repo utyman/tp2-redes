@@ -18,9 +18,9 @@ if len(sys.argv)!= 2:
     sys.exit(1)
 
 ttl=1
-TO=3 #Valor maximo de espera de la respuesta
+TO=1 #Valor maximo de espera de la respuesta
 destino=sys.argv[1]
-cantidad_de_traceroutes = 40
+cantidad_de_traceroutes = 1
 
 # Dentro de RTT master van a estar los RTT promediados.
 RTT_master = [] #Sumador de RRT promedio que respondieron time exceeded en cada salto entre todas las iteraciones.
@@ -55,6 +55,7 @@ for i in range(0,30):
         RTT_master[i] = RTT_master[i] /  RTT_master_cant[i]
 
 RTT_master=eliminarcerosfinales(RTT_master)
+valores_RTT_originales = copy.copy(RTT_master)
 hop=eliminarcerosfinales(hop)
 locs=eliminarcerosfinales(locs)
 
@@ -63,9 +64,11 @@ mostrarruta(hop,RTT_master,fin,mi_ip)
 # Mostramos informacion final
 mostrarinfofinal(RTT_master,hop,mi_ip)
 
-print "Candidatos Outliers (indice del salto empezando en 0 y con eliminacion): " + str(cimbala.cimbala(RTT_master))
+
+outliers = cimbala.cimbala(RTT_master);
+obtenerIpsOutliers(outliers, hop)
 locs.insert(0, obtenerInformacionIP(mi_ip))
 print "url mapa: " + str(obtenerMapa(locs))
 
 # se imprimen los graficos
-imprimirGraficos(RTT_master)
+imprimirGraficos(valores_RTT_originales)

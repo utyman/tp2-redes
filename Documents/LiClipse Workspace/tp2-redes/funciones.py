@@ -5,7 +5,7 @@ import sys
 import cimbala
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
-from cimbala import calcularDiferenciaPromedio
+from cimbala import calcularDiferenciaPromedio, llenarCerosConElRTTAnterior
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 from scapy.all import *
 import matplotlib.pyplot as plt
@@ -31,6 +31,12 @@ def mostrarruta(hop,RTT,fin,mi_ip):
         print "RTT promedio del nodo entre todas las iteraciones: : " + str(RTT[nodo])  
 
 
+def obtenerIpsOutliers(outliers, hops):
+    print "Outliers : \n"
+    for outlier in outliers:
+        print str(hops[outlier]) + " -> " + str(hops[outlier+1])  + " (salto: " + str(outlier+1) + ")"
+    
+
 def mostrarinfofinal(RTT,hop,mi_ip):
     print "\nInformacion final:"
     print "Salto        IP         RTT promediado entre todas las iteraciones"
@@ -43,13 +49,16 @@ def mostrarinfofinal(RTT,hop,mi_ip):
 
 
 def imprimirGraficos(RTT):    
-    plt.plot(cimbala.obtenerDiferenciasRTT(RTT))
+    RTT.insert(0, 0)
+    llenarCerosConElRTTAnterior(RTT)
+    diferencias = cimbala.obtenerDiferenciasRTT(RTT)
+    plt.plot(diferencias)
     plt.ylabel('RTT promediados entre saltos')
     plt.xlabel('Salto')
     plt.title('RTT entre saltos (Promedio)')
     plt.savefig('RTT_promediados.png', bbox_inches='tight')
     plt.close()
-    plt.plot(calcularDiferenciaPromedio(cimbala.obtenerDiferenciasRTT(RTT)))
+    plt.plot(calcularDiferenciaPromedio(diferencias))
     plt.ylabel('(Xi - media)/S')
     plt.xlabel('Salto')
     plt.title('Desvio relativo del salto con respecto a la media')
